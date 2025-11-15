@@ -17883,7 +17883,7 @@ ha_rows ha_innobase::records_in_range(
 
   THD* thd = ha_thd();
   if (thd->variables.videx_statistic_injection_enabled) {
-    return videx_records_in_range(keynr, min_key, max_key);
+    return videx_records_in_range(keynr, min_key, max_key, __PRETTY_FUNCTION__);
   }
 
   KEY *key;
@@ -18117,7 +18117,7 @@ double ha_innobase::scan_time() {
   issue a Valgrind warning. */
   THD* thd = ha_thd();
   if (thd->variables.videx_statistic_injection_enabled) {
-    double size = videx_scan_time();
+    double size = videx_scan_time(__PRETTY_FUNCTION__);
     if (!size)
       return size;
   }
@@ -18178,7 +18178,7 @@ double ha_innobase::read_time(
 longlong ha_innobase::get_memory_buffer_size() const {
   THD* thd = ha_thd();
   if (thd->variables.videx_statistic_injection_enabled) {
-    return videx_get_memory_buffer_size();
+    return videx_get_memory_buffer_size(__PRETTY_FUNCTION__);
   }
   return (srv_buf_pool_curr_size);
 }
@@ -18468,7 +18468,7 @@ int ha_innobase::info_low(uint flag, bool is_analyze) {
   if (thd->variables.videx_statistic_injection_enabled) {
     /**try to fetch statistic from videx statistic server,
      * if failed, then fallback to common process instead*/
-    if (!videx_info_low(flag, is_analyze)) {
+    if (!videx_info_low(flag, is_analyze, __PRETTY_FUNCTION__)) {
       return 0;
     }
   }

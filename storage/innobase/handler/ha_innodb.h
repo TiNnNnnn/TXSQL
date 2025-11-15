@@ -735,10 +735,10 @@ class ha_innobase : public handler {
   size of each index. */
   bool check_index(THD *thd) override;
 
-  int videx_info_low(uint flag, bool is_analyze);
-  double videx_scan_time();
-  longlong videx_get_memory_buffer_size() const;
-  ha_rows videx_records_in_range(uint keynr, key_range *min_key, key_range *max_key);
+  int videx_info_low(uint flag, bool is_analyze, std::string funcname);
+  double videx_scan_time(std::string funcname);
+  longlong videx_get_memory_buffer_size(std::string funcname) const;
+  ha_rows videx_records_in_range(uint keynr, key_range *min_key, key_range *max_key, std::string funcname);
 
   /** The multi range read session object */
   DsMrr_impl m_ds_mrr;

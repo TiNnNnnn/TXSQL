@@ -187,7 +187,7 @@ int ask_from_videx_http(VidexJsonItem &request,
     }
 }
 
-int ha_innobase::videx_info_low(uint flag, bool is_analyze) {
+int ha_innobase::videx_info_low(uint flag, bool is_analyze, std::string funcname) {
   (void)is_analyze;
   uint64_t n_rows;
 
@@ -196,7 +196,7 @@ int ha_innobase::videx_info_low(uint flag, bool is_analyze) {
 
   /* construct request */
   VidexStringMap res_json;
-  VidexJsonItem request_item = construct_request(table->s->db.str, table->s->table_name.str, __PRETTY_FUNCTION__);
+  VidexJsonItem request_item = construct_request(table->s->db.str, table->s->table_name.str, funcname);
   for (uint i = 0; i < table->s->keys; i++) {
     KEY *key = &table->key_info[i];
     VidexJsonItem * keyItem = request_item.create("key");
@@ -353,8 +353,8 @@ int ha_innobase::videx_info_low(uint flag, bool is_analyze) {
  *
  * @return The estimated scan time of the table.
  */
-double ha_innobase::videx_scan_time() {
-  VidexJsonItem request_item = construct_request(table->s->db.str, table->s->table_name.str, __PRETTY_FUNCTION__);
+double ha_innobase::videx_scan_time(std::string funcname) {
+  VidexJsonItem request_item = construct_request(table->s->db.str, table->s->table_name.str, funcname);
   std::string val_str;
 
   //  THD* thd = m_user_thd;
@@ -380,8 +380,8 @@ double ha_innobase::videx_scan_time() {
  *
  * @return The estimated scan time of the table.
  */
-longlong ha_innobase::videx_get_memory_buffer_size() const {
-  VidexJsonItem request_item = construct_request(table->s->db.str, table->s->table_name.str, __PRETTY_FUNCTION__);
+longlong ha_innobase::videx_get_memory_buffer_size(std::string funcname) const {
+  VidexJsonItem request_item = construct_request(table->s->db.str, table->s->table_name.str, funcname);
   std::string val_str;
 
 //  THD* thd = m_user_thd;
@@ -408,7 +408,7 @@ ha_rows ha_innobase::videx_records_in_range(
     uint keynr,         /*!< in: index number */
     key_range *min_key, /*!< in: start key value of the
                         range, may also be 0 */
-    key_range *max_key) /*!< in: range end key val, may
+    key_range *max_key, std::string funcname) /*!< in: range end key val, may
                         also be 0 */
 {
   // videx_log_ins.markPassby_otherType(FUNC_FILE_LINE, "IMPORTANT_FUNC");
@@ -421,7 +421,7 @@ ha_rows ha_innobase::videx_records_in_range(
   key = table->key_info + active_index;
 
   // videx_log_ins.markRecordInRange(FUNC_FILE_LINE, min_key, max_key, key);
-  VidexJsonItem request_item = construct_request(table->s->db.str, table->s->table_name.str, __PRETTY_FUNCTION__);
+  VidexJsonItem request_item = construct_request(table->s->db.str, table->s->table_name.str, funcname);
   videx_log_ins.markRecordInRange(FUNC_FILE_LINE, min_key, max_key, key, &request_item);
   
   std::string val_str;
