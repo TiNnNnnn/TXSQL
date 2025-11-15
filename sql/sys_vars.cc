@@ -8599,6 +8599,12 @@ static Sys_var_bool Sys_in_subquery_conversion_threshold_enabled(
        "0 to disable the conversion",
        SESSION_VAR(in_subquery_conversion_threshold_enabled), CMD_LINE(OPT_ARG),
        DEFAULT(false));
+
+static Sys_var_bool Sys_videx_statistic_injection_enabled(
+       "videx_statistic_injection_enabled",
+       "Whether to enable videx statistic injection",
+       SESSION_VAR(videx_statistic_injection_enabled), CMD_LINE(OPT_ARG),
+       DEFAULT(false));
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 #ifdef HAVE_TDSQL
 static Sys_var_bool Sys_threadpool_eager_mode(

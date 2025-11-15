@@ -504,6 +504,7 @@ struct System_variables {
   */
   uint in_subquery_conversion_threshold;
   bool in_subquery_conversion_threshold_enabled;
+  bool videx_statistic_injection_enabled;
   /**
     @sa Sys_txsql_range_estimation_by_histogram
   */

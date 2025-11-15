@@ -17880,6 +17880,12 @@ ha_rows ha_innobase::records_in_range(
     key_range *max_key) /*!< in: range end key val, may
                         also be 0 */
 {
+
+  THD* thd = ha_thd();
+  if (thd->variables.videx_statistic_injection_enabled) {
+    return videx_records_in_range(keynr, min_key, max_key);
+  }
+
   KEY *key;
   dict_index_t *index;
   dtuple_t *range_start;
@@ -18109,6 +18115,12 @@ double ha_innobase::scan_time() {
   it we could end up returning uninitialized value to the caller,
   which in the worst case could make some query plan go bogus or
   issue a Valgrind warning. */
+  THD* thd = ha_thd();
+  if (thd->variables.videx_statistic_injection_enabled) {
+    double size = videx_scan_time();
+    if (!size)
+      return size;
+  }
 
   if (m_prebuilt == nullptr) {
     /* In case of derived table, Optimizer will try to fetch stat
@@ -18164,6 +18176,10 @@ double ha_innobase::read_time(
 /** Return the size of the InnoDB memory buffer. */
 
 longlong ha_innobase::get_memory_buffer_size() const {
+  THD* thd = ha_thd();
+  if (thd->variables.videx_statistic_injection_enabled) {
+    return videx_get_memory_buffer_size();
+  }
   return (srv_buf_pool_curr_size);
 }
 
@@ -18447,6 +18463,15 @@ int ha_innobase::info_low(uint flag, bool is_analyze) {
   DBUG_TRACE;
 
   DEBUG_SYNC_C("ha_innobase_info_low");
+
+  THD* thd = ha_thd();
+  if (thd->variables.videx_statistic_injection_enabled) {
+    /**try to fetch statistic from videx statistic server,
+     * if failed, then fallback to common process instead*/
+    if (!videx_info_low(flag, is_analyze)) {
+      return 0;
+    }
+  }
 
   /* If we are forcing recovery at a high level, we will suppress
   statistics calculation on tables, because that may crash the

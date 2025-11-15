@@ -41,10 +41,14 @@ IF(MSVC AND NOT WIN32_CLANG)
   ADD_COMPILE_OPTIONS("/wd4589")
 ENDIF()
 
+find_package(CURL REQUIRED)
+
 # TODO: Fix up all non-canonical include paths and remove this.
 INCLUDE_DIRECTORIES(
   ${CMAKE_SOURCE_DIR}/sql
   ${CMAKE_SOURCE_DIR}/sql/auth
+  ${CMAKE_SOURCE_DIR}/extra/rapidjson/include
+  ${CMAKE_SOURCE_DIR}/extra/curl/curl-8.1.2/include
 )
 
 # Conflicting YYSTYPE, because we have multiple Bison grammars.
@@ -146,6 +150,9 @@ SET(INNOBASE_SOURCES
   handler/ha_innodb.cc
   handler/ha_innopart.cc
   handler/handler0alter.cc
+  handler/videx_json_item.cc
+  handler/videx_log_utils.cc
+  handler/statistic_client.cc
   handler/i_s.cc
   handler/p_s.cc
   ibuf/ibuf0ibuf.cc
@@ -327,7 +334,7 @@ MYSQL_ADD_PLUGIN(innobase
   ${INNOBASE_SOURCES} ${INNOBASE_ZIP_DECOMPRESS_SOURCES} STORAGE_ENGINE
   MANDATORY
   MODULE_OUTPUT_NAME ha_innodb
-  LINK_LIBRARIES sql_dd sql_gis ${ZLIB_LIBRARY} ${LZ4_LIBRARY} ${NUMA_LIBRARY})
+  LINK_LIBRARIES sql_dd sql_gis ${ZLIB_LIBRARY} ${LZ4_LIBRARY} ${NUMA_LIBRARY} CURL::libcurl)
 
 # On linux: /usr/include/stdio.h:#define BUFSIZ 8192
 # On Solaris: /usr/include/iso/stdio_iso.h:#define    BUFSIZ  1024
